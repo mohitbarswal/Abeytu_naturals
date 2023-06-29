@@ -83,11 +83,14 @@
       </nav>
       <!-- /.sidebar-menu -->
     </div>
-    <div>
-      {% block content %} {% endblock content %}
-    </div>
+    
     <!-- /.sidebar -->
   </aside>
+  <div class="content-wrapper">
+    <section class="content">
+    {% block content %} {% endblock content %}
+  </section>
+  </div>
   <!-- /.content-wrapper -->
   <footer class="main-footer fixed">
     <strong>Copyright &copy; 2014-2019 <a href="https://www.cssoftsolutions.com/">Cs Soft Solutions</a>.</strong>
