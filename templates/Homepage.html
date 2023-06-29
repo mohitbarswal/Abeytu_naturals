@@ -1,0 +1,356 @@
+{% extends 'Base.html' %}
+{% load static %}
+{% block content %}
+<style>
+	.errorlist {
+		list-style-type: none;
+		color: red;
+		font-size: 12px;
+		margin: 0;
+	}
+	.mstag {
+		color: Green;
+	}
+
+</style>
+<center>
+	{% if messages %} {% for message in messages %}
+	<span class="mstag">{{ message }}</span>
+	{% endfor %} {% endif %}
+	<h4 class="alert bg-green">Home Page</h4><br>
+	<form method="POST" id="homepage_id" enctype="multipart/form-data">
+    {% csrf_token %}
+    <input type="hidden" name="homeid" id="homeid" />
+
+
+    <details>
+        <summary class="alert alert-info">Banner</summary>
+            <table id="bannerdisp" class="table table-hover col-sm-8 text-center">
+                <tr>
+                    <th scope="col">Heading</th>
+                    <th scope="col">Image</th>
+                    <th scope="col">Action</th>
+                </tr>
+                {% for i in alldata %}
+                    <tr class="show_hide" >
+                        <td>{{ i.banner_heading|safe }}</td>
+                        <td>
+                            {% if i.banner_image %}
+                                <img style="width:75px;" src="{{i.banner_image.url}}">
+                            {% else %}
+                                <span>No Image</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <input  type="button" data-sid={{i.id}} class="btn btn-info btn-edit" value="Change">
+                        </td>
+                    </tr>
+                {% endfor %}
+            </table>
+            <table id="banneredit" >
+                {{homepage_form.media}}
+                    {% for a in homepage_form %}
+                        {% if a.name == 'banner_heading' %}
+                            <tr>
+                                <td>{{ a.label_tag }} {{ a }}</td>
+                            </tr>
+                        {% endif %}
+                        {% if a.name == 'banner_image' %}
+                            <tr class="imagelabel">
+                                <td>{{ a.label_tag }} {{ a }}</td>
+                            </tr>
+                        {% endif %}
+                    {% endfor %}
+                    <tr class="changeimage" style="display: none">
+                        <td><label for="banner_image_id">Banner image:</label> Currently: <a href=""id="banner_image_id"></a>
+                            <br>
+                            Change:
+                            <input type="file" class="banner_image_cls" name="banner_image" id="banner_image_id">
+                        </td>
+                    </tr>
+            </table>
+    </details>
+
+    <details>
+      <summary class="alert alert-info">Best seller</summary>
+        <table id="sellerdisp" class="table table-hover col-sm-8 text-center">
+            {% for i in alldata %}
+            <tr>
+                <td>
+                    <input  type="button" data-sid={{i.id}} class="btn btn-info btn-edit" value="Change">
+                </td>
+            </tr>
+            <tr>
+                <th scope="col">Heading</th>
+                <th scope="col">Image</th>
+                <th scope="col">Data</th>
+                <th scope="col">Action</th>
+            </tr>
+            {% for i in i.home_bestseller_key.all  %}
+                <tr class="seller_disp">
+                    <td >{{i.best_seller_heading|safe}}</td>
+                    <td>
+                    {% if i.best_seller_image %}
+                    <img style="width:75px;" src="{{i.best_seller_image.url}}">
+                    {% else %}
+                    <span>No Image</span>
+                    {% endif %}
+                    </td>
+                    <td>{{i.best_seller_data|safe}}</td>
+                
+                    <td>
+                        <input type="button" data-sid="{{i.id}}" class="btn btn-danger btn-sellerdel" value="Delete">
+                  </td>
+                {% endfor %}
+            {% endfor %}
+                <tr>
+                    <td>
+                        <input type="button" onclick="addmoresellerdisp()" value="Add more">
+                    </td>
+                </tr>
+        </table>
+        <table id="sellermore">
+        </table>
+        <table id="selleredit" >
+            {{bestseller_form.media}}
+            {% for a in bestseller_form %}
+                {% if a.name == 'best_seller_heading' %}
+                    <tr>
+                        <td>{{ a.label_tag }} {{ a }}</td>
+                    </tr>
+                {% endif %}
+                {% if a.name == 'best_seller_image' %}
+                    <tr>
+                        <td>{{ a.label_tag }} {{ a }}</td>
+                    </tr>
+                {% endif %}
+                {% if a.name == 'best_seller_data' %}
+                    <tr>
+                        <td>{{ a.label_tag }} {{ a }}</td>
+                    </tr>
+                {% endif %}
+            {% endfor %}
+                <tr class="imagelabel" style="text-align: center">
+                    <td>
+                        <input type="button" onclick="addmoreseller()" value="Add more">
+                    </td>
+                </tr>
+        </table>               
+    </details>
+
+    <details>
+      <summary class="alert alert-info">Unique</summary>
+      <table id="uniquedisp" class="table table-hover col-sm-8 text-center">
+                {% for i in alldata %}
+                    <tr>
+                        <td>
+                            <input  type="button" data-sid={{i.id}} class="btn btn-info btn-edit" value="Change">
+                        </td>
+                    </tr>
+					<tr>
+						<th scope="col">Heading</th>
+						<th scope="col">Image</th>
+						<th scope="col">Action</th>
+					</tr>
+                    {% for i in i.home_unique_key.all  %}
+					<tr class="allunique_class">
+						<td>{{ i.unique_heading|safe }}</td>
+						<td>
+						{% if i.unique_image %}
+							<img style="width:75px;" src="{{i.unique_image.url}}">
+						{% else %}
+							<span>No Image</span>
+						{% endif %}
+						</td>
+						<td>
+              				<input type="button" data-sid="{{i.id}}" class="btn btn-danger btn-uniquedel" value="Delete">
+            			</td>
+          			</tr>
+                    {% endfor %}
+          		{% endfor %}
+          			<tr>
+            			<td>
+              				<input type="button" onclick="addmoreuniquedisp()" value="Add more">
+            			</td>
+          			</tr>
+			</table>
+
+            <table id="uniquemore">
+            </table>
+            <table id="uniqueedit">
+            	{{addunique_form.media}}
+                	{% for a in addunique_form %}
+                		{% if a.name == 'unique_heading' %}
+							<tr>
+								<td>{{ a.label_tag }} {{ a }}</td>
+							</tr>
+                  		{% endif %}
+						{% if a.name == 'unique_image' %}
+							<tr>
+								<td>{{ a.label_tag }} {{ a }}</td>
+							</tr>
+						{% endif %}
+                	{% endfor %}
+						<tr class="imagelabel" style="text-align: center">
+							<td>
+								<input type="button" onclick="addmoreunique()" value="Add more">
+							</td>
+					</tr>
+            </table>
+    </details>
+
+    <details>
+        <summary class="alert alert-info">Product</summary>
+            <table id="productdisp" class="table table-hover col-sm-8 text-center">
+                {% for i in alldata %}
+                    <tr>
+                        <th scope="col">Heading</th>
+                        <th scope="col">Image</th>
+                        <th scope="col">Data</th>
+                        <th scope="col">Action</th>
+                    </tr>
+                    <tr>
+                        <td>{{ i.product_heading|safe }}</td>
+                        <td>
+                        {% if i.product_image %}
+                        <img style="width:75px;" src="{{i.product_image.url}}">
+                        {% else %}
+                        <span>No Image</span>
+                        {% endif %}
+                        </td>
+                        <td>{{ i.product_data|safe }}</td>
+                        <td>
+                            <input  type="button" data-sid={{i.id}} class="btn btn-info btn-edit" value="Change">
+                        </td>
+                    </tr>
+                {% endfor %}
+            </table>
+            <table id="productedit" >
+                {{homepage_form.media}}
+                {% for a in homepage_form %}
+                    {% if a.name == 'product_heading' %}
+                        <tr>
+                            <td>{{ a.label_tag }} {{ a }}</td>
+                        </tr>
+                    {% endif %}
+                    {% if a.name == 'product_data' %}
+                    <tr>
+                        <td>{{ a.label_tag }} {{ a }}</td>
+                    </tr>
+                    {% endif %}
+                    {% if a.name == 'product_image' %}
+                        <tr class="imagelabel" >
+                            <td>{{ a.label_tag }} {{ a }}</td>
+                        </tr>
+                    {% endif %}
+                {% endfor %}
+                <tr class="changeimage" style="display: none">
+                    <td><label for="product_image_id">Product Image:</label> Currently: <a href=""id="product_image_id"></a>
+                        {% comment %} <input type="checkbox" name="product_image-clear" id="product_image-clear_id">
+                        <label for="product_image-clear_id">Clear</label> {% endcomment %}
+                        <br>
+                        Change:
+                        <input type="file" class="product_image_cls" name="product_image" id="product_image_id">
+                    </td>
+                </tr>
+            </table>
+    </details>
+
+    <details>
+      <summary class="alert alert-info">Client Reviews</summary>
+            <table id="reviewdisp" class="table table-hover col-sm-8 text-center">
+                {% for i in alldata %}
+                    <tr>
+                        <th scope="col">Client Name</th>
+                        <th scope="col">Feedback</th>
+                        <th scope="col">Action</th>
+                    </tr>
+                    <tr>
+                        <td>{{ i.client_name|safe }}</td>
+                        <td>{{ i.feedback_data|safe }}</td>
+                        <td>
+                            <input  type="button" data-sid={{i.id}} class="btn btn-info btn-edit" value="Change">
+                        </td>
+                    </tr>
+                {% endfor %}
+            </table>
+            <table id="reviewedit" >
+              {{homepage_form.media}}
+                {% for a in homepage_form %}
+                  {% if a.name == 'client_name' %}
+                    <tr>
+                        <td>{{ a.label_tag }} {{ a }}</td>
+                    </tr>
+                  {% endif %}
+                  {% if a.name == 'feedback_data' %}
+                    <tr>
+                        <td>{{ a.label_tag }} {{ a }}</td>
+                    </tr>
+                  {% endif %}
+                {% endfor %}
+            </table>
+    </details>
+
+    <details>
+      <summary class="alert alert-info">Collaboration</summary>
+          {% for i in alldata %}
+            <table id="collabdisp" class="table table-hover col-sm-8 text-center">
+                <tr>
+                    <th scope="col">Heading</th>
+                    <th scope="col">Image</th>
+                    <th scope="col">Data</th>
+                    <th scope="col">Action</th>
+                </tr>
+                <tr>
+                    <td>{{ i.collab_heading|safe }}</td>
+                    <td>
+                    {% if i.collab_image %}
+                    <img style="width:75px;" src="{{i.collab_image.url}}">
+                    {% else %}
+                    <span>No Image</span>
+                    {% endif %}
+                    </td>
+                    <td>{{ i.collab_data|safe }}</td>
+                    <td>
+                        <input  type="button" data-sid={{i.id}} class="btn btn-info btn-edit" value="Change">
+                    </td>
+                </tr>
+            </table>
+          {% endfor %}
+              <table id="collabedit" >
+                    {{homepage_form.media}}
+                    {% for a in homepage_form %}
+                        {% if a.name == 'collab_heading' %}
+                        <tr>
+                            <td>{{ a.label_tag }} {{ a }}</td>
+                        </tr>
+                        {% endif %}
+                        {% if a.name == 'collab_image' %}
+                        <tr class="imagelabel" >
+                            <td>{{ a.label_tag }} {{ a }}</td>
+                        </tr>
+                        {% endif %}
+                        {% if a.name == 'collab_data' %}
+                        <tr>
+                            <td>{{ a.label_tag }} {{ a }}</td>
+                        </tr>
+                        {% endif %}
+                    {% endfor %}
+                    <tr class="changeimage" style="display: none">
+                        <td><label for="collab_image_id">Collab Image:</label> Currently: <a href=""id="collab_image_id"></a>
+                            {% comment %} <input type="checkbox" name="collab_image-clear" id="collab_image-clear_id">
+                            <label for="collab_image-clear_id">Clear</label> {% endcomment %}
+                            <br>
+                            Change:
+                            <input type="file" class="collab_image_cls" name="collab_image" id="collab_image_id">
+                        </td>
+                    </tr>
+                </table>
+    </details> 
+
+    <input type="submit" class="save_btn"  id="btnsave" value="Save">
+  </form>
+
+</center>
+{% endblock content %}
+
